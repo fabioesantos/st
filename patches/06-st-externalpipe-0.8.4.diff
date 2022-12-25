@@ -5,7 +5,7 @@ index 76b7e0d..0e9a614 100644
 @@ -723,8 +723,14 @@ sigchld(int a)
  	if ((p = waitpid(pid, &stat, WNOHANG)) < 0)
  		die("waiting for pid %hd failed: %s\n", pid, strerror(errno));
- 
+
 -	if (pid != p)
 +	if (pid != p) {
 +		if (p == 0 && wait(&stat) < 0)
@@ -15,13 +15,13 @@ index 76b7e0d..0e9a614 100644
 +		signal(SIGCHLD, sigchld);
  		return;
 +	}
- 
+
  	if (WIFEXITED(stat) && WEXITSTATUS(stat))
  		die("child exited with status %d\n", WEXITSTATUS(stat));
 @@ -1926,6 +1932,59 @@ strparse(void)
  	}
  }
- 
+
 +void
 +externalpipe(const Arg *arg)
 +{
@@ -54,7 +54,7 @@ index 76b7e0d..0e9a614 100644
 +	oldsigpipe = signal(SIGPIPE, SIG_IGN);
 +	newline = 0;
 +	for (n = 0; n < term.row; n++) {
-+		bp = term.line[n];
++		bp = TLINE(n);
 +		lastpos = MIN(tlinelen(n) + 1, term.col) - 1;
 +		if (lastpos < 0)
 +			break;
@@ -62,7 +62,7 @@ index 76b7e0d..0e9a614 100644
 +		for (; bp < end; ++bp)
 +			if (xwrite(to[1], buf, utf8encode(bp->u, buf)) < 0)
 +				break;
-+		if ((newline = term.line[n][lastpos].mode & ATTR_WRAP))
++		if ((newline = TLINE(n)[lastpos].mode & ATTR_WRAP))
 +			continue;
 +		if (xwrite(to[1], "\n", 1) < 0)
 +			break;
@@ -85,10 +85,8 @@ index 3d351b6..392b64e 100644
 @@ -81,6 +81,7 @@ void die(const char *, ...);
  void redraw(void);
  void draw(void);
- 
+
 +void externalpipe(const Arg *);
- void kscrolldown(const Arg *);
- void kscrollup(const Arg *);
  void printscreen(const Arg *);
  void printsel(const Arg *);
  void sendbreak(const Arg *);

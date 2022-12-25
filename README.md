@@ -4,12 +4,13 @@ My custom build of suckless terminal v0.9
 ## Patches applied
 
 * st-alpha
-* st-scrollback
+* st-scrollback-ringbuffer
 * st-scrollback-mouse
 * st-scrollback-mouse-altscreen
-* st-ligatures-alpha-scrollback
-* st-externalpipe
 * st-font2
+* st-externalpipe (for the scripts used by this patch see my [dotfiles](https://github.com/fabioesantos/Dotfiles).
+* st-boxdraw
+* st-ligatures
 
 ## st - simple terminal
 
@@ -18,7 +19,7 @@ st is a simple terminal emulator for X which sucks less.
 
 ## Requirements
 
-In order to build st you need the Xlib header files.
+In order to build st you need the Xlib and Harfbuzz header files.
 
 
 ## Installation
